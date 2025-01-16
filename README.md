@@ -14,7 +14,8 @@
 Samba und die zugehörigen Pakete wurden installiert:
 
 ```
-sudo apt updatesudo apt install samba
+sudo apt update
+sudo apt install samba
 ```
 
 Die Installation wurde mit folgendem Befehl überprüft:
