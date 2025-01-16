@@ -105,3 +105,61 @@ Der Zugriff auf die Freigabe erfolgte erfolgreich über folgende Schritte:
   1. Dateimanager geöffnet.
     
   2. Verbindung über `smb://192.168.142.141/shared` hergestellt.
+
+7. Backup eines Windows-Ordners auf den Samba-Share
+
+1. Samba-Share auf Windows verbinden
+
+Öffne den Datei-Explorer in Windows.
+
+Gib in die Adressleiste die Netzwerkadresse des Samba-Shares ein, z. B.:
+
+\\192.168.142.141\shared
+
+Gib die Samba-Zugangsdaten ein (Benutzername und Passwort).
+
+(Optional) Mounte das Laufwerk dauerhaft:
+
+Rechtsklick auf den Share → "Netzlaufwerk verbinden" auswählen.
+
+Einen Laufwerksbuchstaben (z. B. Z:) zuweisen.
+
+"Bei Anmeldung wieder verbinden" aktivieren.
+
+2. Backup-Skript erstellen (Robocopy)
+
+Ein Batch-Skript wurde erstellt, um ein Backup des Windows-Ordners auf den Samba-Share durchzuführen:
+
+@echo off
+:: Samba-Login vor dem Backup herstellen
+net use \\192.168.142.141\shared /user:olive mySecurePassword
+
+:: Quell- und Zielordner definieren
+set SOURCE="C:\\Pfad\\zum\\Ordner"
+set DESTINATION="\\\\192.168.142.141\\shared"
+
+:: Backup durchführen
+robocopy %SOURCE% %DESTINATION% /MIR /FFT /Z /XA:H /W:5 /R:3
+
+:: Samba-Verbindung trennen
+net use \\192.168.142.141\shared /delete
+
+net use: Baut die Verbindung mit den Zugangsdaten auf.
+
+robocopy: Kopiert Dateien vom Windows-Ordner zum Samba-Share.
+
+/delete: Trennt die Verbindung nach Abschluss des Backups.
+
+3. Automatisierung mit Aufgabenplanung (Task Scheduler)
+
+Das Skript wurde mit der Windows-Aufgabenplanung automatisiert:
+
+Öffne die Aufgabenplanung.
+
+Erstelle eine neue Aufgabe:
+
+Gib der Aufgabe einen Namen (z. B. "Backup zu Samba-Share").
+
+Wähle aus, dass sie täglich oder zu bestimmten Zeiten ausgeführt wird.
+
+Verknüpfe das Skript (backup.bat) unter "Aktionen".
